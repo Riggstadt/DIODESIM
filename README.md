@@ -42,11 +42,21 @@ $$V_{F2}=ESR\cdot I_{D2}+N\cdot V_{TH}\cdot ln\left(\frac{I_{D2}}{I_{S}}\right)\
 $$V_{F3}=ESR\cdot I_{D3}+N\cdot V_{TH}\cdot ln\left(\frac{I_{D3}}{I_{S}}\right)\\; (1.3)$$
 
 To simplify the equations we introduce several coefficients:
-$$V_{F1}=A_{1}\cdot ESR+B_{1}\cdot N$$
-$$V_{F2}=A_{2}\cdot ESR+B_{2}\cdot N$$
-$$V_{F3}=A_{3}\cdot ESR+B_{3}\cdot N$$
+$$V_{F1}-V_{F2}=A_{1}\cdot ESR+B_{1}\cdot N$$
+$$V_{F1}-V_{F3}=A_{2}\cdot ESR+B_{2}\cdot N$$
+where: $A_{1}=I_{D1}-I_{D2}$ ; $B1=V_{TH}\cdot ln\left(\frac{I_{D1}}{I_{D2}}\right)$ for the first equation and $A_{2}=I_{D1}-I_{D3}$ ; $B2=V_{TH}\cdot ln\left(\frac{I_{D1}}{I_{D3}}\right)$ for the second equation
+$$V_{F1}-V_{F2}=A_{1}\cdot ESR+B_{1}\cdot N\quad ||\quad \cdot (-B_{2})$$
 
-$$V_{F1}=A_{1}\cdot ESR+B_{1}\cdot N\quad ||\quad \cdot (-B{2})
-$$V_{F2}=A_{2}\cdot ESR+B_{2}cdot N$$
+$$V_{F1}-V_{F3}=A_{2}\cdot ESR+B_{2}\cdot N\quad ||\quad \cdot (B_{1})$$
 
+$$B_{1}\cdot (V_{F1}-V_{F3})-B_{2}\cdot (V_{F1}-V_{F2})=ESR\cdot (A_{2}B_{1}-A_{1}B_{2})\Longrightarrow ESR = \frac{B_{1}\cdot (V_{F1}-V_{F3})-B_{2}\cdot (V_{F1}-V_{F2})}{A_{2}B_{1}-A_{1}B_{2}}$$
+We do the same thing to find N.
 
+$$N = \frac{A_{1}\cdot (V_{F1}-V_{F3})-A_{2}\cdot (V_{F1}-V_{F2})}{B_{2}A_{1}-A_{2}B_{1}}$$
+
+And to find $I_{S}$ we simply introduce the newly found values in the Shockley equation.
+
+$$I_{S}=I_{D1}\cdot exp\left(-\frac{V_{F1}-ESR\cdot I_{D1}}{N\cdot V_{TH}}\right)$$
+
+For the values provided in the table above we obtain with a bit of python code:
+$ESR = $
