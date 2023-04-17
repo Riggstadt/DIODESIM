@@ -3,7 +3,7 @@
 The purpose of this short project is to learn how to extract the parameters most important for modelling the static characteristcs of the diode.
 The diode simulated in this project is in fact the LED [VSLY5940](https://www.vishay.com/docs/84240/vsly5940.pdf).
 ## INTRODUCTION
-We seek to use the data available in the datasheet of the diode to determine the numerical values of:
+We seek to use the data available in the diode datasheet to determine the numerical values of:
 1. Series Resistance (ESR)
 2. Ideality Factor ($\eta$)
 3. Saturation Current ($I_{S}$)
@@ -157,5 +157,6 @@ Other great resources:
 4.  Semiconductor device modeling with SPICE
 by Massobrio, Giuseppe
 
-All custom plots are done in matplotlib
-All schematics if not otherwise specified are done in draw.io
+All custom plots are done in matplotlib.
+
+All schematics if not otherwise specified are done in draw.io.
