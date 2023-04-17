@@ -77,7 +77,34 @@ And to find $I_{S}$ we simply introduce the newly found values in the Shockley e
 
 $$I_{S}=I_{D1}\cdot exp\left(-\frac{V_{F1}-ESR\cdot I_{D1}}{N\cdot V_{TH}}\right)$$
 
-For the values provided in the table above we obtain with a bit of python code:
+The code:
+```python
+A1 = Id1-Id2
+B1 = Vth * np.log(Id1/Id2)
+
+A2 = Id1-Id3
+B2 = Vth * np.log(Id1/Id3)
+
+
+'''
+Ideality factor (N)
+'''
+N = (A1 * (V1-V3) - A2 * (V1-V2)) / (A1*B2 - A2*B1)
+
+
+'''
+Internal series resistance (Rs)
+'''
+Rs = (B1 * (V1-V3) - B2 * (V1-V2)) / (A2*B1 - A1*B2)
+
+
+'''
+Saturation current
+'''
+Isat = Id1 * np.exp(-(V1-Rs*Id1)/(N*Vth))
+```
+
+For the values provided in the table above we obtain:
 $ESR = 1.1884\\; \Omega,\quad N = 2.4467,\quad I_{S} = 2.7641\\; pA$
 
 And with these values we obtain the following static characteristic, clearly very close to the original datasheet one:
@@ -86,21 +113,49 @@ And with these values we obtain the following static characteristic, clearly ver
 </p>
 
 ## Testing and matching the new diode model
-Now that we've found the necessary parameters, we input known voltages/ currents and gauge the correctness of the output and to make things more interesting we'll use the Lambert W function:
+Now that we've found the necessary parameters, we input known voltages/ currents and gauge the correctness of the output and to make things more interesting we'll use the Lambert W function.
+
+Given that we know $ESR,\\; N,\\; I_{S}$ find the corresponding currents for $V_{F}=2V$ and $V_{F}=2.5V$.
+
+$$V_{F}-ESR\\; I_{D}-\eta\\; V_{TH}\\; ln\left(\frac{I_{D}}{I_{SAT}}\right)=0$$
+$$\frac{V_{F}}{\eta\\; V_{TH}}-\frac{ESR\\;I_{D}}{\eta\\; V_{TH}}=ln\left(\frac{I_{D}}{I_{SAT}}\right)$$
+$$exp\left(\frac{V_{F}}{\eta\\; V_{TH}}-\frac{ESR\\;I_{D}}{\eta\\; V_{TH}}\right)=\frac{I_{D}}{I_{SAT}}$$
+
+$$exp\left(\frac{V_{F}}{\eta\\; V_{TH}}\right)=\frac{I_{D}}{I_{SAT}}\cdot exp\left(\frac{ESR\\; I_{D}}{\eta\\; V_{TH}}\right)$$
+
+$$\frac{ESR\\; I_{SAT}}{\eta\\;V_{TH}}\cdot exp\left(\frac{V_{F}}{\eta\\; V_{TH}}\right)=\frac{ESR\\; I_{D}}{\eta\\; V_{TH}}\cdot exp\left(\frac{ESR\\; I_{D}}{\eta\\; V_{TH}}\right)$$
+We set $w=\frac{ESR\\; I_{D}}{\eta\\; V_{TH}}$
+
+$$w\\;e^{w}=\frac{ESR\\; I_{SAT}}{\eta\\;V_{TH}}\cdot exp\left(\frac{V_{F}}{\eta\\;V_{TH}}\right)$$
+
+$$w=LambertW\left(\frac{ESR\\; I_{SAT}}{\eta\\;V_{TH}}\cdot exp\left(\frac{V_{F}}{\eta\\;V_{TH}}\right)\right)$$
+
+$$\frac{ESR\\; I_{D}}{\eta\\; V_{TH}}=LambertW\left(\frac{ESR\\; I_{SAT}}{\eta\\;V_{TH}}\cdot exp\left(\frac{V_{F}}{\eta\\;V_{TH}}\right)\right)$$
+
+$$I_{D}=\frac{\eta\\; V_{TH}}{ESR}\cdot LambertW\left(\frac{ESR\\; I_{SAT}}{\eta\\;V_{TH}}\cdot exp\left(\frac{V_{F}}{\eta\\;V_{TH}}\right)\right)$$
+
+The code for doing the math:
+
+```python
+VFt = np.array([2,2.5])
+Idt = np.real(N * Vth / Rs * lambertw((ESR*Isat)/(N*Vth)*np.exp(VFt/(N*Vth))))
+#Idt[0]=0.323859  A
+#Idt[1]=0.703234  A
+```
+We obtain $I=0.323859$ for $V_{F}=2V$ and $I_{D}=0.703234$ for $V_{F}=2.5V$, which are very close to the values presented in the datsheet, as you can see below:
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/127757267/232427182-3d39725d-ddb7-4654-a686-a60139518ed7.png" />
+</p>
 
 ## Bibliography and Notes
 This project is based on [this](https://electronics.stackexchange.com/questions/601136/ltspice-modeling-an-led) post on electronics.stackexchange.
 
-Other instrumental resources:
+Other great resources:
 1.  https://ltwiki.org/files/SPICEdiodeModel.pdf
 2.  https://electronics.stackexchange.com/questions/480311/basic-diode-question-about-voltage-drop
 3.  https://web.ece.ucsb.edu/Faculty/rodwell/Classes/ece2c/labs/CurveFittinginExcel.pdf
-
 4.  Semiconductor device modeling with SPICE
 by Massobrio, Giuseppe
 
 All custom plots are done in matplotlib
 All schematics if not otherwise specified are done in draw.io
-# THINGS TO ADD:
-La capitolul de testare:
-Derivez toata chestia cu lambert W si pun graficul cu cele doua puncte aditionale
